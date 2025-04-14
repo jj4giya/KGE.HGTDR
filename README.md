@@ -14,12 +14,7 @@ This work builds upon the research presented in:
 *   **DOI:** [10.1093/bioinformatics/btae349](https://doi.org/10.1093/bioinformatics/btae349)
 *   **Original Code:** https://github.com/bcb-sut/HGTDR
 
-The HGTDR paper proposed a novel approach for drug repurposing using Heterogeneous Graph Transformers (HGT) on the PrimeKG biomedical knowledge graph. Its key contributions include:
-
-1.  **Heterogeneous Graph Construction:** Utilizing PrimeKG, which integrates multiple biomedical databases.
-2.  **Feature Extraction:** Employing BioBERT and ChemBERTa for initial node features and HGT layers to learn context-aware embeddings that respect the different types of nodes and relations.
-3.  **Link Prediction:** Using a simple MLP decoder to predict potential drug-disease indication links based on the learned embeddings.
-4.  **End-to-End Framework:** Providing a scalable and automated pipeline for repurposing predictions.
+The HGTDR paper proposed a novel approach for drug repurposing using Heterogeneous Graph Transformers (HGT) on the PrimeKG biomedical knowledge graph.
 
 ## Modifications in this Repository (HGTDR + TransE)
 
@@ -32,36 +27,21 @@ This repository extends the original HGTDR implementation with the primary goal 
     *   The pre-trained TransE *entity* embeddings are saved.
 2.  **Entity Identifier Alignment:**
     *   The PyKEEN training uses the display names of entities (e.g., 'Aspirin', 'Diabetes Mellitus') as identifiers.
-    *   The HGTDR preprocessing script (`src/wtranse.py` or the notebook derived from it) has been modified to use these same display names when building its internal graph structure and entity dictionaries, ensuring correct lookup into the TransE embeddings. This required using the `x_name`/`y_name` columns from `kg.csv`.
+    *   The HGTDR preprocessing script (`src/wtranse.ipynb`) has been modified to use these same display names when building its internal graph structure and entity dictionaries, ensuring correct lookup into the TransE embeddings. 
     *   A reverse mapping (display name -> `type::index`) is created internally to look up BioBERT/ChemBERTa embeddings, which expect the `type::index` format.
 3.  **Combined Feature Vectors:**
-    *   The TransE entity embeddings are concatenated with the BioBERT and ChemBERTa embeddings during the preprocessing step (`preprocess_fold_data` function).
+    *   The TransE entity embeddings are concatenated with the BioBERT and ChemBERTa embeddings during the preprocessing step.
     *   The input linear layer of the HGT model is adjusted to handle this new, larger combined feature dimension.
 4.  **Framework Alignment:**
     *   This implementation adheres to the 5-fold cross-validation structure used in the original paper, loading the same pre-defined data splits (`train[1-5].pkl`, `val[1-5].pkl`) for fair comparison.
-    *   The batching logic (`make_batch`, `make_test_batch`) and loss calculation (`compute_loss`) have been carefully aligned with the original `hgtdrOG.py` implementation after debugging.
+    *   The batching logic (`make_batch`, `make_test_batch`) and loss calculation (`compute_loss`) have been carefully aligned with the original implementation after debugging.
 
 The hypothesis is that the TransE embeddings capture global graph structure and relational patterns that might be complementary to the context-based features from BioBERT/ChemBERTa, potentially leading to improved prediction performance.
 
 ## Installation
 
-1.  **Clone the Repository:**
-    ```bash
-    git clone <repository-url>
-    cd <repository-directory>
-    ```
-
-2.  **Create Conda Environment (Recommended):**
-    ```bash
-    # Create environment from file (you need to create environment.yml)
-    # conda env create -f environment.yml
-    # Or create manually and install packages
-    conda create -n hgtdr_env python=3.10 # Or your preferred version
-    conda activate hgtdr_env
-    ```
-
-3.  **Install Dependencies:**
-    *   **Create `requirements.txt`:** You should create a `requirements.txt` file listing necessary packages. Based on the code, it should include at least:
+1.  **Install Dependencies:**
+    *   **Create `requirements.txt`:** You should create a `requirements.txt` file listing necessary packages. 
         ```txt
         torch
         torch_geometric
@@ -70,16 +50,9 @@ The hypothesis is that the TransE embeddings capture global graph structure and 
         scikit-learn
         matplotlib
         pykeen
-        pickle # (Standard library)
-        # Add specific versions if necessary, e.g., torch==2.1.0
+        pickle 
         ```
-    *   **Install PyTorch:** Install PyTorch matching your CUDA version (if using GPU). Refer to the [PyTorch website](https://pytorch.org/). Example:
-        ```bash
-        # Example for CUDA 11.8
-        pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
-        # Or for CPU
-        # pip install torch torchvision torchaudio
-        ```
+
     *   **Install PyTorch Geometric:** Follow instructions on the [PyG website](https://pytorch-geometric.readthedocs.io/en/latest/install/installation.html), ensuring compatibility with your PyTorch version.
     *   **Install Other Packages:**
         ```bash
@@ -128,28 +101,7 @@ Place the following files/directories in the specified locations relative to the
 
 Key parameters can be modified in **Cell 2 (Configuration)** of the main script/notebook:
 
-*   **File Paths:** Adjust paths to data, embeddings, and mapping files.
 *   **Embedding Selection:** `USE_BIOBERT`, `USE_CHEMBERTA`, `USE_TRANSE` (boolean flags). Set `USE_TRANSE` to `False` to run without TransE embeddings for comparison.
 *   **HGTDR Hyperparameters:** Found in the `HGTDR_CONFIG` dictionary (e.g., `batch_size`, `epochs`, `learning_rate`, `hidden_channels`, `dropout`, etc.).
 *   **Output Directory:** `OUT_DIR`.
 *   **GPU Usage:** The `get_device_for_fold` function implements a simple strategy. Modify if you have a different number of GPUs or prefer manual assignment.
-
-## Citation
-
-If you use this code or build upon this work, please cite the original HGTDR paper:
-
-```bibtex
-@article{gharizadeh2024hgtdr,
-    author = {Gharizadeh, Ali and Abbasi, Karim and Ghareyazi, Amin and Mofrad, Mohammad R.K. and Rabiee, Hamid R.},
-    title = "{HGTDR: Advancing drug repurposing with heterogeneous graph transformers}",
-    journal = {Bioinformatics},
-    volume = {40},
-    number = {7},
-    pages = {btae349},
-    year = {2024},
-    month = {07},
-    issn = {1367-4803},
-    doi = {10.1093/bioinformatics/btae349},
-    url = {https://doi.org/10.1093/bioinformatics/btae349},
-    eprint = {https://academic.oup.com/bioinformatics/article-pdf/40/7/btae349/58477152/btae349.pdf},
-}
