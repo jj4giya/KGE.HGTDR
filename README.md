@@ -65,7 +65,7 @@ Please refer to the official **PyTorch Geometric Installation Guide** for the la
 or
 [Link 2](https://pytorch-geometric.com/whl/)
 
-You may need to reinstall PyTorch and PyG after creating the environment from the YAML file if the default versions are not suitable for your system (particularly for GPU usage).
+You may need to reinstall PyTorch and PyG after creating the environment from the YML file if the default versions are not suitable for your system (particularly for GPU usage).
 
 Now you have the necessary environment set up to run the project code.
 
