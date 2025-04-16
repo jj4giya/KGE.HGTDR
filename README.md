@@ -88,7 +88,7 @@ Place the following files/directories in the specified locations relative to the
 ## Usage
 
 1.  **Run HGTDR + TransE:**
-    *   The main logic is provided in `src/wtranse.ipynb`.
+    *   The main logic is provided in `src/hgtdrKGE.ipynb`.
     *   Run the cells sequentially in the notebook.
     *   The script will perform the 5-fold cross-validation.
 
